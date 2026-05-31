@@ -64,7 +64,35 @@ Look at the diagram. Each layer reads only the part it needs.
 {% comment %}block:4{% endcomment %}
 ## Now you write
 
-<!-- TODO block:4 -->
+Greenfield's advanced filter ships this week. The requirements are short:
+
+- Filter by branch (a branch identifier like `branch_north`).
+- Filter by shelf (Greenfield has fiction, biography, reference, periodicals).
+- Filter by whether the book is on shelf right now or out on loan.
+
+Write the URL.
+
+Read the parts you just named, in order. Scheme: same. Host: same. Version: same. Resource: same. Three new filters means three new query parameters. Add them to the existing query string.
+
+Here is what the parts give you:
+
+```text
+https://api.greenfield.lib/v1/books?q=mystery&branch=branch_north&shelf=fiction&on_shelf=true
+```
+
+Three new query parameters: `branch`, `shelf`, `on_shelf`. Each one a `name=value` pair, separated from its neighbor by `&`. Below is the URL with the new parts highlighted. Hover or tap each part to read what it commits to.
+
+{% include interactive-svg.html slug="anatomyofurl" alt="The advanced filter URL rendered as visible text wrapped to two lines: line 1 https://api.greenfield.lib/v1/books, line 2 ?q=mystery&branch=branch_north&shelf=fiction&on_shelf=true. The five parts of the URL are individually hoverable regions: scheme (https), host (api.greenfield.lib), version (/v1), resource (/books), and query string (line 2 in its entirety). The three new query parameters added in this PR (branch, shelf, on_shelf) are rendered in copper while the existing q parameter and the rest of the URL are rendered in ink, marking what the apprentice wrote versus what was already there. Hovering or tapping each part reveals what it commits to and who reads it downstream. The version part's tooltip notes the alternative header-based versioning form some APIs use. The query string part's tooltip names the four name=value pairs and their separators." %}
+
+A few things you might have done differently and what the parts say about each:
+
+**Did you write `/v1/books/filter`?** That makes the URL name an action (filter), not the thing being filtered (books). The block 3 rule was: the resource is the noun. Filter belongs in the query string. `/v1/books` is still the resource; the query string says how to look at it.
+
+**Did you write `/v1/books/branch_north/fiction/true`?** Path segments are for resources and their children, not for filter values. Two reasons it goes badly: the order of segments has to be memorized (which one is the branch, which one is the shelf?), and adding a fourth filter next year means breaking every URL anyone has saved. Query string parameters are named and unordered. Adding `?author=connelly` next year is invisible to every existing caller.
+
+**Did you write `?filters=branch:branch_north,shelf:fiction,on_shelf=true`?** That packs the filters into a single query parameter as a string. Greenfield's server would now have to parse that string itself, defining its own grammar (what does the comma mean, what does the colon mean, how do you escape values that contain commas). The URL standard already defines how `&` and `=` work; reusing them is free.
+
+Devon shipped the same URL you just wrote. The PR comment you leave him: nothing. The URL design is right. The doc page that explains what each filter does, what `on_shelf=false` means versus omitting `on_shelf` entirely, what happens when `branch` is misspelled: that is Module 4. Today you wrote the URL.
 
 {% comment %}block:5{% endcomment %}
 <!-- TODO block:5 -->
