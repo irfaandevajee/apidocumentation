@@ -94,7 +94,7 @@ A few things you might have done differently and what the parts say about each:
 
 **Did you write `/v1/books/branch_north/fiction/true`?** Path segments are for resources and their children, not for filter values. Two reasons it goes badly: the order of segments has to be memorized (which one is the branch, which one is the shelf?), and adding a fourth filter next year means breaking every URL anyone has saved. Query string parameters are named and unordered. Adding `?author=connelly` next year is invisible to every existing caller.
 
-**Did you write `?filters=branch:branch_north,shelf:fiction,on_shelf=true`?** That packs the filters into a single query parameter as a string. Greenfield's server would now have to parse that string itself, defining its own grammar (what does the comma mean, what does the colon mean, how do you escape values that contain commas). The URL standard already defines how `&` and `=` work; reusing them is free.
+**Did you write `?filters=branch:branch_north,shelf:fiction,on_shelf:true`?** That packs the filters into a single query parameter as a string. Greenfield's server would now have to parse that string itself, defining its own grammar (what does the comma mean, what does the colon mean, how do you escape values that contain commas). The URL standard already defines how `&` and `=` work; reusing them is free.
 
 Devon shipped the same URL you just wrote. The PR comment you leave him: nothing. The URL design is right. The doc page that explains what each filter does, what `on_shelf=false` means versus omitting `on_shelf` entirely, what happens when `branch` is misspelled: that is Module 4. Today you wrote the URL.
 
