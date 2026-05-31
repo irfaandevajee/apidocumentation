@@ -149,7 +149,7 @@ Here is a URL pattern: <paste>. Read it left to right and name the five parts in
 {% comment %}block:9{% endcomment %}
 ## Before you go
 
-<!-- TODO block:9 -->
+Look at the URL bar of any web page you have open. Read it left to right. Name the parts that are there and the parts that aren't.
 
 {% comment %}block:10{% endcomment %}
 ## Next week at Greenfield
