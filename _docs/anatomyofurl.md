@@ -95,7 +95,12 @@ A few things you might have done differently and what the parts say about each:
 Devon shipped the same URL you just wrote. The PR comment you leave him: nothing. The URL design is right. The doc page that explains what each filter does, what `on_shelf=false` means versus omitting `on_shelf` entirely, what happens when `branch` is misspelled: that is Module 4. Today you wrote the URL.
 
 {% comment %}block:5{% endcomment %}
-<!-- TODO block:5 -->
+{% capture body %}
+Pick a public API doc you've used recently. Open one of its endpoint URLs (most reference pages show the full URL right next to the method). Read it left to right. Name the five parts. Then answer: where did the API put its version? Does it have a base path? Does the resource name a thing or an action? Does it use a query string or a body for filters?
+
+Write five lines per URL: one per part, then a verdict in one line on whether the URL was easy to read. Repeat for two more URLs from two different APIs. Notice when one API is harder to read than another. The harder ones usually have a reason. Sometimes the reason is good (the API has been around for fifteen years and changing the URL would break the world). Sometimes the reason is that nobody ever sat down and asked these questions.
+{% endcapture %}
+{% include callout.html variant="exercise" body=body %}
 
 {% comment %}block:6{% endcomment %}
 <!-- TODO block:6 -->
