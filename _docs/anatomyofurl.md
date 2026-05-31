@@ -154,6 +154,6 @@ Look at the URL bar of any web page you have open. Read it left to right. Name t
 {% comment %}block:10{% endcomment %}
 ## Next week at Greenfield
 
-<!-- TODO block:10 -->
+Next week the URL gets harder. The parts we skipped today (fragments, port, path parameters) and the parts that hurt when they go wrong (encoding, traversal, ambiguous slashes) all show up. Devon has opinions about those too.
 
 {% include signoff.html %}
