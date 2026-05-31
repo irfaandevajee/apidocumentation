@@ -17,7 +17,9 @@ next_page:
 {% comment %}block:1{% endcomment %}
 ## Friday's PR
 
-<!-- TODO block:1 -->
+Tuesday morning of story week 6. I open my laptop. Devon's PR is at the top of my review queue. He opened it Friday afternoon with one line: "advanced filter, take 4. no POST. yes query string. yes `branch_north` not `north`. yes I read RFC 3986."
+
+The URL is in the OpenAPI diff: `https://api.greenfield.lib/v1/books?q=mystery&branch=branch_north&shelf=fiction&on_shelf=true`. It's 9:30. Devon is in standup. He won't be back for forty minutes. Today you start your own URL, the one Devon flagged the week we first talked about REST. You can't write a URL until you can read one. So we read his left to right.
 
 {% comment %}block:2{% endcomment %}
 ## Today you will leave with
