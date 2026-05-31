@@ -119,7 +119,13 @@ The trap matters for URL design because once an API ships `/v1/users/activate`, 
 {% comment %}block:7{% endcomment %}
 ## Words you can drop in standups now
 
-<!-- TODO block:7 -->
+{% include glossary-term.html term="scheme" %}. Use this when you mean "the `https://` part of the URL." More specific than "protocol", less ambiguous to engineers.
+
+{% include glossary-term.html term="host" %}. Use this when you mean "the part that DNS resolves to an IP." Catches all of subdomain, registered domain, and TLD without needing to name each one.
+
+{% include glossary-term.html term="resource" %}. Use this when you mean "the noun in the path that names what the response will be about." The opposite of an action.
+
+{% include glossary-term.html term="query string" %}. Use this when you mean "the part after the `?` that customizes the response without changing which handler runs."
 
 {% include ad-slot.html slot="lesson-mid-2" format="auto" %}
 
