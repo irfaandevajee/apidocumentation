@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 300" preserveAspectRatio="xMidYMid meet" style="max-width:100%;height:auto;" data-svg-pattern="hover-tooltip" role="img" aria-label="Stub. Real SVG ships in Task 11.">
+  <title>Stub SVG for M2L3; real 5-region hover-tooltip URL ships in Task 11.</title>
+  <desc>Placeholder so the lesson build does not 404 on the interactive-svg include. Replaced in Task 11 with the URL anatomy hover described in the spec.</desc>
+  <rect x="0" y="0" width="900" height="300" fill="#fbf8f3" />
+  <text x="450" y="150" text-anchor="middle" font-family="Georgia, serif" font-size="18" fill="#0c1a2b">Interactive SVG placeholder. Real SVG ships in Task 11.</text>
+</svg>
