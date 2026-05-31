@@ -103,7 +103,14 @@ Write five lines per URL: one per part, then a verdict in one line on whether th
 {% include callout.html variant="exercise" body=body %}
 
 {% comment %}block:6{% endcomment %}
-<!-- TODO block:6 -->
+{% capture body %}
+Plenty of APIs have URLs like `POST /v1/users/123/activate`, `POST /v1/orders/cancel`, `GET /v1/books/get?id=bk_184932`. Verbs in the path. That's RPC in a REST jacket, the same trap from last week.
+
+Devon's rule: if the URL has a verb in it, the API is RPC underneath. The doc page owes the reader an operation list, not a resource list. The right move is not to pretend otherwise. Document what the API does, with the words the API uses.
+
+The trap matters for URL design because once an API ships `/v1/users/activate`, every URL after it tends to follow. Patterns set hard. The first URL you write is the URL every URL after it will copy. Pick a noun.
+{% endcapture %}
+{% include callout.html variant="warning" body=body %}
 
 {% comment %}block:7{% endcomment %}
 ## Words you can drop in standups now
