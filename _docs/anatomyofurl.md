@@ -132,7 +132,19 @@ The trap matters for URL design because once an API ships `/v1/users/activate`, 
 {% comment %}block:8{% endcomment %}
 ## AI co pilot tip
 
-<!-- TODO block:8 -->
+Tool: Cursor (the code editor with AI built in).
+
+**The situation.** You're reviewing a PR that adds a new endpoint, or you're drafting one yourself. The diff has a URL pattern in it (the OpenAPI YAML, the routes file, a comment block). You want a second opinion on whether the URL design follows the parts.
+
+**The prompt** (highlight the URL or the OpenAPI path entry, open the Cursor chat panel):
+
+```text
+Here is a URL pattern: <paste>. Read it left to right and name the five parts in left-to-right order. For each part, say one sentence on whether the choice fits common REST conventions. If the URL names an action instead of a resource, say so. If a filter is in the path that should be in the query string, say so. Do not hedge.
+```
+
+**What to expect back.** Five short lines, one per part, and a verdict in one sentence on the URL as a whole. If Cursor finds a verb in the path, the verdict should say so.
+
+**What to watch for.** Cursor sometimes tries to be diplomatic about a URL that names an action ("this is a stylistic choice"). Push back: "is this URL RPC or REST?" The second pass usually picks one. Cursor is at its best when it has the surrounding code as context, so ask the question with the routes file or the OpenAPI YAML open in the editor.
 
 {% comment %}block:9{% endcomment %}
 ## Before you go
