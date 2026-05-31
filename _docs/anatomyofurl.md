@@ -24,7 +24,9 @@ The URL is in the OpenAPI diff: `https://api.greenfield.lib/v1/books?q=mystery&b
 {% comment %}block:2{% endcomment %}
 ## Today you will leave with
 
-<!-- TODO block:2 -->
+- How to read a URL left to right and name the five parts.
+- What each part commits to and who reads it downstream.
+- One URL you wrote yourself.
 
 {% include ad-slot.html slot="lesson-mid-1" format="auto" %}
 
