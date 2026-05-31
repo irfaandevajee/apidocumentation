@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 300" preserveAspectRatio="xMidYMid meet" style="max-width:100%;height:auto;" data-svg-pattern="hover-tooltip" role="img" aria-label="The advanced filter URL rendered as visible text wrapped to two lines, with the five URL parts as hoverable regions and the three new query parameters rendered in copper.">
+  <title>Greenfield's advanced filter URL with five hoverable parts</title>
+  <desc>The URL https://api.greenfield.lib/v1/books?q=mystery&amp;branch=branch_north&amp;shelf=fiction&amp;on_shelf=true wrapped to two lines. Line 1 carries the scheme (https), host (api.greenfield.lib), version (/v1), and resource (/books). Line 2 carries the query string with q=mystery in ink and the three new query parameters (branch, shelf, on_shelf) in copper. Hovering or tapping each part reveals what it commits to and who reads it downstream.</desc>
+
+  <rect x="0" y="0" width="900" height="300" fill="#fbf8f3" />
+
+  <!-- Title above the URL -->
+  <text x="450" y="50" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#5a7a64">The advanced filter URL. Hover or tap each part.</text>
+
+  <!-- ===== Line 1: scheme, host, version, resource (all ink) ===== -->
+
+  <!-- Region: scheme (https) -->
+  <g tabindex="0" role="button" aria-label="scheme: https" data-tooltip="The protocol the client speaks. HTTPS means encrypted. Every byte after the :// is unreadable to anything in the middle. Greenfield is HTTPS like every public API a 2026 reader is calling.">
+    <rect x="40" y="98" width="60" height="36" fill="transparent" />
+    <text x="40" y="124" font-family="ui-monospace, Menlo, monospace" font-size="22" fill="#0c1a2b">https</text>
+    <line x1="40" y1="138" x2="100" y2="138" stroke="#5a7a64" stroke-width="1" stroke-dasharray="2,2" />
+  </g>
+
+  <!-- Separator: :// -->
+  <text x="100" y="124" font-family="ui-monospace, Menlo, monospace" font-size="22" fill="#0c1a2b">://</text>
+
+  <!-- Region: host (api.greenfield.lib) -->
+  <g tabindex="0" role="button" aria-label="host: api.greenfield.lib" data-tooltip="What DNS resolves to an IP address. The api. subdomain separates the API server from Greenfield's public site at greenfield.lib. Two different machines, same registered domain.">
+    <rect x="138" y="98" width="220" height="36" fill="transparent" />
+    <text x="138" y="124" font-family="ui-monospace, Menlo, monospace" font-size="22" fill="#0c1a2b">api.greenfield.lib</text>
+    <line x1="138" y1="138" x2="358" y2="138" stroke="#5a7a64" stroke-width="1" stroke-dasharray="2,2" />
+  </g>
+
+  <!-- Region: version (/v1) -->
+  <g tabindex="0" role="button" aria-label="version: /v1" data-tooltip="The version segment Devon put in the URL on day one. When Greenfield ships v2, /v1 keeps working until Devon turns it off. Some APIs hide the version in a header. Devon keeps it visible.">
+    <rect x="358" y="98" width="44" height="36" fill="transparent" />
+    <text x="358" y="124" font-family="ui-monospace, Menlo, monospace" font-size="22" fill="#0c1a2b">/v1</text>
+    <line x1="358" y1="138" x2="402" y2="138" stroke="#5a7a64" stroke-width="1" stroke-dasharray="2,2" />
+  </g>
+
+  <!-- Region: resource (/books) -->
+  <g tabindex="0" role="button" aria-label="resource: /books" data-tooltip="The noun. The handler that serves this URL is the books handler. The query string changes which books come back; the resource decides the response is about books in the first place.">
+    <rect x="402" y="98" width="80" height="36" fill="transparent" />
+    <text x="402" y="124" font-family="ui-monospace, Menlo, monospace" font-size="22" fill="#0c1a2b">/books</text>
+    <line x1="402" y1="138" x2="482" y2="138" stroke="#5a7a64" stroke-width="1" stroke-dasharray="2,2" />
+  </g>
+
+  <!-- ===== Line 2: query string (one hover region wrapping the whole line) ===== -->
+
+  <g tabindex="0" role="button" aria-label="query string: ?q=mystery and three new params" data-tooltip="Four name=value pairs separated by &amp;. The first, q=mystery, was already there. You added branch, shelf, and on_shelf this morning. The query string parameterizes the handler. Same handler, different filter.">
+    <rect x="40" y="170" width="820" height="40" fill="transparent" />
+    <!-- ?q=mystery in ink (existing) -->
+    <text x="40" y="200" font-family="ui-monospace, Menlo, monospace" font-size="20" fill="#0c1a2b">?q=mystery</text>
+    <!-- &branch=branch_north in copper (new) -->
+    <text x="170" y="200" font-family="ui-monospace, Menlo, monospace" font-size="20" fill="#b85c38">&amp;branch=branch_north</text>
+    <!-- &shelf=fiction in copper (new) -->
+    <text x="425" y="200" font-family="ui-monospace, Menlo, monospace" font-size="20" fill="#b85c38">&amp;shelf=fiction</text>
+    <!-- &on_shelf=true in copper (new) -->
+    <text x="605" y="200" font-family="ui-monospace, Menlo, monospace" font-size="20" fill="#b85c38">&amp;on_shelf=true</text>
+    <line x1="40" y1="214" x2="780" y2="214" stroke="#5a7a64" stroke-width="1" stroke-dasharray="2,2" />
+  </g>
+
+  <!-- Legend below the URL -->
+  <text x="40" y="250" font-family="Georgia, serif" font-size="13" fill="#0c1a2b">
+    <tspan>Ink: what was already there. </tspan><tspan fill="#b85c38">Copper: what you just wrote.</tspan>
+  </text>
+</svg>
