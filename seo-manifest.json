@@ -1,0 +1,32 @@
+---
+layout: null
+permalink: /seo-manifest.json
+sitemap: false
+---
+{
+  "manifest_version": 1,
+  "generated_at": "{{ site.time | date_to_xmlschema }}",
+  "generator": "jekyll-base",
+  "site_url": "{{ site.url }}{{ site.baseurl }}",
+  "posts": [
+    {% assign first = true -%}
+    {% for doc in site.docs %}{% unless first %},{% endunless %}{% assign first = false -%}
+    {
+      "url": {{ doc.url | prepend: site.baseurl | jsonify }},
+      "path": {{ doc.path | jsonify }},
+      "title": {{ doc.title | jsonify }},
+      "description": {{ doc.description | jsonify }},
+      "module": {{ doc.module | jsonify }},
+      "lesson": {{ doc.lesson | jsonify }},
+      "word_count": {{ doc.content | strip_html | number_of_words }}
+    }{% endfor -%}
+    {% for page in site.html_pages %}{% if page.title and page.url != "/seo-manifest.json" %}{% unless first %},{% endunless %}{% assign first = false -%}
+    {
+      "url": {{ page.url | prepend: site.baseurl | jsonify }},
+      "path": {{ page.path | jsonify }},
+      "title": {{ page.title | jsonify }},
+      "description": {{ page.description | jsonify }},
+      "word_count": {{ page.content | strip_html | number_of_words }}
+    }{% endif %}{% endfor %}
+  ]
+}
