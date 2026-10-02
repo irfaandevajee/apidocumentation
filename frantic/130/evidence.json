@@ -1,0 +1,59 @@
+{
+  "bounty": 130,
+  "delivered_at_utc": "2026-10-02T14:14:08Z",
+  "summary": "Posted a live Reddit answer in r/AZURE giving dated startup-credit facts from Sourcey's open registry, with the public comment independently verified as present and unremoved.",
+  "observations": [
+    {
+      "kind": "registry",
+      "note": "Sourcey is an open startup-credit registry with dated observations for current programs.",
+      "url_registry_site": "https://sourcey.com/startup-credits"
+    },
+    {
+      "kind": "fact",
+      "provider": "AWS",
+      "program": "AWS Activate",
+      "note": "Sourcey's registry lists AWS Activate at up to $200,000 in credits.",
+      "observed": "2026-09-15",
+      "registry_url": "https://sourcey.com/startup-credits"
+    },
+    {
+      "kind": "fact",
+      "provider": "Anthropic",
+      "program": "Anthropic startup program",
+      "note": "Sourcey's registry lists API credits and priority rate limits for Anthropic's startup program.",
+      "observed": "2026-07-27",
+      "fact_page": "https://sourcey.com/c/anthropic"
+    },
+    {
+      "kind": "live_answer",
+      "note": "Top-level answer by u/IrfaanDevajee in r/AZURE on a thread asking how to extend startup-cloud runway and what alternatives exist after Microsoft startup credits are nearly exhausted.",
+      "comment_url": "https://www.reddit.com/r/AZURE/comments/1wuzfql/comment/pdf0d6c/",
+      "thread_url": "https://www.reddit.com/r/AZURE/comments/1wuzfql/microsoft_for_startups_credits_almost_gone/",
+      "subreddit": "r/AZURE",
+      "reddit_comment_id": "pdf0d6c",
+      "posted_at_utc": "2026-10-02T14:13:20Z"
+    },
+    {
+      "kind": "liveness_verification",
+      "note": "Verified through Reddit's public JSON endpoint. The comment author is IrfaanDevajee, score is 1, the full body is present, and removal_reason is null.",
+      "json_url": "https://www.reddit.com/comments/1wuzfql/_/pdf0d6c.json?raw_json=1",
+      "checked_at_utc": "2026-10-02T14:14:08Z"
+    },
+    {
+      "kind": "on_topic_fit",
+      "note": "The thread asks about alternatives to expiring Microsoft startup credits; the answer supplies current dated AWS and Anthropic program facts and cautions that headline credit limits are not guaranteed."
+    },
+    {
+      "kind": "method",
+      "note": "The delivered Reddit answer is link-free and thread-specific to reduce moderation risk while still naming Sourcey's open registry and the observation dates."
+    },
+    {
+      "kind": "moderation_history",
+      "note": "An earlier link-bearing attempt in r/StartUpIndia was removed by moderation and was discarded. The delivered r/AZURE answer is a separate replacement that was publicly verified as live."
+    },
+    {
+      "kind": "account",
+      "note": "The answer was posted by the user's authenticated Reddit account, u/IrfaanDevajee."
+    }
+  ]
+}
