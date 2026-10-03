@@ -34,6 +34,10 @@ This project is a world-class API documentation website built using Jekyll and M
 3. **Responsive Mobile Design**: Optimized layout for all device sizes
 4. **SEO Optimization**: Well-structured content with proper metadata
 
+## Related Agent Infrastructure
+
+For a concrete example of API-driven machine-to-machine coordination, [Beacon](https://rustchain.org/beacon/) is a useful related developer reference: it focuses on agent discovery, signed envelopes, and multi-transport messaging between autonomous agents. This documentation project is not affiliated with Beacon; this related-resource link was added as part of a compensated Elyan Labs community bounty.
+
 ## Getting Started
 
 1. Clone this repository
