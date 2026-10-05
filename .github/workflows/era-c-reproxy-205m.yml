@@ -1,0 +1,66 @@
+name: Era C-roll Reproxy 205MB
+
+on:
+  push:
+    branches: ["master"]
+    paths:
+      - ".github/workflows/era-c-reproxy-205m.yml"
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  reproxy-c:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      SOURCE_RUN_ID: "37277545887"
+      SOURCE_ARTIFACT: "era-C-roll-top-view-proxy"
+      TARGET_MIB: "205"
+    steps:
+      - name: Download existing successful C-roll proxy
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.SOURCE_ARTIFACT }}
+          path: source-artifact
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ env.SOURCE_RUN_ID }}
+
+      - name: Install ffmpeg
+        run: |
+          set -euxo pipefail
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Recompress C-roll to connector-safe size
+        shell: bash
+        run: |
+          set -euxo pipefail
+          SOURCE="$(find source-artifact -type f \( -iname '*.mp4' -o -iname '*.mov' \) | head -n1)"
+          test -n "${SOURCE}"
+          mkdir -p era-c-proxy
+          OUTPUT="era-c-proxy/C-roll-top-view-proxy-205m.mp4"
+          duration="$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "${SOURCE}")"
+          video_kbps="$(python3 -c 'import sys; seconds=max(float(sys.argv[1]),1.0); target=int(sys.argv[2])*1024*1024; print(max(250,min(2200,int((target*8/seconds/1000)-104))))' "${duration}" "${TARGET_MIB}")"
+          ffmpeg -hide_banner -y -i "${SOURCE}" \
+            -map 0:v:0 -map 0:a? \
+            -vf "scale='if(gte(iw,ih),min(1920,iw),-2)':'if(gte(iw,ih),-2,min(1920,ih))',fps=30" \
+            -c:v libx264 -preset veryfast -b:v "${video_kbps}k" \
+            -maxrate "$((video_kbps*12/10))k" -bufsize "$((video_kbps*2))k" \
+            -pix_fmt yuv420p -c:a aac -b:a 80k -movflags +faststart \
+            "${OUTPUT}"
+          sha256sum "${OUTPUT}" > "era-c-proxy/C-roll-top-view-proxy-205m-SHA256.txt"
+          bytes="$(stat -c%s "${OUTPUT}")"
+          test "${bytes}" -lt 235000000
+          ls -lh "${OUTPUT}"
+          ffprobe -v error -show_entries format=duration,size -of default=nw=1 "${OUTPUT}"
+
+      - name: Upload connector-safe C-roll
+        uses: actions/upload-artifact@v4
+        with:
+          name: era-C-roll-top-view-proxy-205m
+          path: era-c-proxy/
+          compression-level: 0
+          retention-days: 7
