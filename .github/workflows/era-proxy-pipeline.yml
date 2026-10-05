@@ -1,0 +1,108 @@
+name: Era Large File Proxy Pipeline
+
+on:
+  push:
+    branches: ["master"]
+    paths:
+      - ".github/workflows/era-proxy-pipeline.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  make-proxies:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    env:
+      TARGET_MIB: "850"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Free runner disk
+        run: |
+          set -euxo pipefail
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/.ghcup /opt/hostedtoolcache/CodeQL || true
+          sudo docker image prune -af || true
+          df -h /
+
+      - name: Install tools
+        run: |
+          set -euxo pipefail
+          python3 -m pip install --upgrade gdown
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Download and transcode Era sources one at a time
+        shell: bash
+        run: |
+          set -euxo pipefail
+          mkdir -p era-proxies
+
+          process_video() {
+            local file_id="$1"
+            local label="$2"
+            local ext="$3"
+            local source="${label}.${ext}"
+            local output="era-proxies/${label}-proxy.mp4"
+
+            echo "=== Downloading ${label} ==="
+            gdown --continue --retries 8 "https://drive.google.com/uc?id=${file_id}" -O "${source}"
+            ls -lh "${source}"
+
+            local duration width height
+            duration="$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "${source}")"
+            width="$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of default=nw=1:nk=1 "${source}")"
+            height="$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of default=nw=1:nk=1 "${source}")"
+
+            local video_kbps
+            video_kbps="$(python3 - <<PY
+import math
+seconds=max(float('${duration}'),1.0)
+target_bytes=int('${TARGET_MIB}')*1024*1024
+audio_kbps=96
+kbps=int((target_bytes*8/seconds/1000)-audio_kbps-24)
+print(max(350,min(2500,kbps)))
+PY
+)"
+
+            if [ "${width}" -ge "${height}" ]; then
+              vf="scale='min(1920,iw)':-2,fps=30"
+            else
+              vf="scale=-2:'min(1920,ih)',fps=30"
+            fi
+
+            echo "${label}: duration=${duration}s ${width}x${height}, video=${video_kbps}k"
+            ffmpeg -hide_banner -y -i "${source}" \
+              -map 0:v:0 -map 0:a? \
+              -vf "${vf}" \
+              -c:v libx264 -preset veryfast -b:v "${video_kbps}k" \
+              -maxrate "$((video_kbps*12/10))k" -bufsize "$((video_kbps*2))k" \
+              -pix_fmt yuv420p \
+              -c:a aac -b:a 96k \
+              -movflags +faststart \
+              "${output}"
+
+            echo "=== Completed ${label} ==="
+            ls -lh "${output}"
+            ffprobe -v error -show_entries format=duration,size -of default=nw=1 "${output}"
+            rm -f "${source}"
+            df -h /
+          }
+
+          # A-roll speaking head (~4.29 GB)
+          process_video "1NTsoe4OdflmZO0pOMbWhVfiIKzltZHCP" "A-roll-speaking-head" "mov"
+          # B-roll screencast (~212 MB)
+          process_video "1Mf4rnBFq9d_16f7IyenwHK_JzScXFUm9" "B-roll-screencast" "mov"
+          # C-roll top view (~14.3 GB)
+          process_video "1LS9eD3ReIhBEriRa69Tsi1xm5MYU72HM" "C-roll-top-view" "MOV"
+
+          sha256sum era-proxies/*.mp4 | tee era-proxies/SHA256SUMS.txt
+
+      - name: Upload proxies
+        uses: actions/upload-artifact@v4
+        with:
+          name: era-wallet-editing-proxies
+          path: era-proxies/
+          compression-level: 0
+          retention-days: 7
