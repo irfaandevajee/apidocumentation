@@ -11,11 +11,23 @@ permissions:
   contents: read
 
 jobs:
-  make-proxies:
+  make-proxy:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: A-roll-speaking-head
+            file_id: 160wjBnqkw6ra_eYuL0RjiZfmLtm5DSRI
+          - label: B-roll-screencast
+            file_id: 1Xe3KATYILaq6GPv_JHSWLomHYe4crJL6
+          - label: C-roll-top-view
+            file_id: 1LS9eD3ReIhBEriRa69Tsi1xm5MYU72HM
     runs-on: ubuntu-latest
     timeout-minutes: 350
     env:
       TARGET_MIB: "850"
+      LABEL: ${{ matrix.label }}
+      FILE_ID: ${{ matrix.file_id }}
     steps:
       - uses: actions/checkout@v4
 
@@ -29,70 +41,61 @@ jobs:
       - name: Install tools
         run: |
           set -euxo pipefail
-          python3 -m pip install --upgrade gdown
+          python3 -m pip install --upgrade gdown yt-dlp
           sudo apt-get update
           sudo apt-get install -y ffmpeg
 
-      - name: Download and transcode Era sources one at a time
+      - name: Download source with Drive preview fallback
+        shell: bash
+        run: |
+          set -uo pipefail
+          SOURCE="source-video"
+          echo "Trying full Drive download for ${LABEL}"
+          if gdown --continue --retries 4 "https://drive.google.com/uc?id=${FILE_ID}" -O "${SOURCE}"; then
+            echo "Full-file download succeeded"
+          else
+            echo "Full-file path quota-blocked; trying Google Drive playable-video stream"
+            rm -f "${SOURCE}"
+            yt-dlp --no-playlist --retries 8 --fragment-retries 8 \
+              -f "best[height<=1080]/best" \
+              -o "${SOURCE}" \
+              "https://drive.google.com/file/d/${FILE_ID}/view"
+          fi
+          test -s "${SOURCE}"
+          ls -lh "${SOURCE}"
+          ffprobe -v error -show_entries format=duration,size -of default=nw=1 "${SOURCE}"
+
+      - name: Transcode duration-aware proxy under 1 GB
         shell: bash
         run: |
           set -euxo pipefail
-          mkdir -p era-proxies
+          mkdir -p era-proxy
+          SOURCE="source-video"
+          OUTPUT="era-proxy/${LABEL}-proxy.mp4"
+          duration="$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "${SOURCE}")"
+          width="$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of default=nw=1:nk=1 "${SOURCE}")"
+          height="$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of default=nw=1:nk=1 "${SOURCE}")"
+          video_kbps="$(python3 -c 'import sys; seconds=max(float(sys.argv[1]),1.0); target=int(sys.argv[2])*1024*1024; print(max(350,min(3000,int((target*8/seconds/1000)-120))))' "${duration}" "${TARGET_MIB}")"
+          if [ "${width}" -ge "${height}" ]; then
+            vf="scale='min(1920,iw)':-2,fps=30"
+          else
+            vf="scale=-2:'min(1920,ih)',fps=30"
+          fi
+          ffmpeg -hide_banner -y -i "${SOURCE}" \
+            -map 0:v:0 -map 0:a? \
+            -vf "${vf}" \
+            -c:v libx264 -preset veryfast -b:v "${video_kbps}k" \
+            -maxrate "$((video_kbps*12/10))k" -bufsize "$((video_kbps*2))k" \
+            -pix_fmt yuv420p -c:a aac -b:a 96k -movflags +faststart \
+            "${OUTPUT}"
+          sha256sum "${OUTPUT}" > "era-proxy/${LABEL}-SHA256.txt"
+          ls -lh "${OUTPUT}"
+          ffprobe -v error -show_entries format=duration,size -of default=nw=1 "${OUTPUT}"
 
-          process_video() {
-            local file_id="$1"
-            local label="$2"
-            local ext="$3"
-            local source="${label}.${ext}"
-            local output="era-proxies/${label}-proxy.mp4"
-
-            echo "=== Downloading ${label} ==="
-            gdown --continue --retries 8 "https://drive.google.com/uc?id=${file_id}" -O "${source}"
-            ls -lh "${source}"
-
-            local duration width height
-            duration="$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "${source}")"
-            width="$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of default=nw=1:nk=1 "${source}")"
-            height="$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of default=nw=1:nk=1 "${source}")"
-
-            local video_kbps
-            video_kbps="$(python3 -c 'import sys; seconds=max(float(sys.argv[1]),1.0); target=int(sys.argv[2])*1024*1024; print(max(350,min(2500,int((target*8/seconds/1000)-120))))' "${duration}" "${TARGET_MIB}")"
-
-            local vf
-            if [ "${width}" -ge "${height}" ]; then
-              vf="scale='min(1920,iw)':-2,fps=30"
-            else
-              vf="scale=-2:'min(1920,ih)',fps=30"
-            fi
-
-            echo "${label}: duration=${duration}s ${width}x${height}, video=${video_kbps}k"
-            ffmpeg -hide_banner -y -i "${source}" \
-              -map 0:v:0 -map 0:a? \
-              -vf "${vf}" \
-              -c:v libx264 -preset veryfast -b:v "${video_kbps}k" \
-              -maxrate "$((video_kbps*12/10))k" -bufsize "$((video_kbps*2))k" \
-              -pix_fmt yuv420p \
-              -c:a aac -b:a 96k \
-              -movflags +faststart \
-              "${output}"
-
-            echo "=== Completed ${label} ==="
-            ls -lh "${output}"
-            ffprobe -v error -show_entries format=duration,size -of default=nw=1 "${output}"
-            rm -f "${source}"
-            df -h /
-          }
-
-          process_video "1NTsoe4OdflmZO0pOMbWhVfiIKzltZHCP" "A-roll-speaking-head" "mov"
-          process_video "1Mf4rnBFq9d_16f7IyenwHK_JzScXFUm9" "B-roll-screencast" "mov"
-          process_video "1LS9eD3ReIhBEriRa69Tsi1xm5MYU72HM" "C-roll-top-view" "MOV"
-
-          sha256sum era-proxies/*.mp4 | tee era-proxies/SHA256SUMS.txt
-
-      - name: Upload proxies
+      - name: Upload proxy
         uses: actions/upload-artifact@v4
         with:
-          name: era-wallet-editing-proxies
-          path: era-proxies/
+          name: era-${{ matrix.label }}-proxy
+          path: era-proxy/
           compression-level: 0
           retention-days: 7
