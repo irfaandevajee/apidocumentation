@@ -17,15 +17,15 @@ jobs:
       matrix:
         include:
           - label: A-roll-speaking-head
-            file_id: 160wjBnqkw6ra_eYuL0RjiZfmLtm5DSRI
+            file_id: 1NTsoe4OdflmZO0pOMbWhVfiIKzltZHCP
           - label: B-roll-screencast
-            file_id: 1Xe3KATYILaq6GPv_JHSWLomHYe4crJL6
+            file_id: 1Mf4rnBFq9d_16f7IyenwHK_JzScXFUm9
           - label: C-roll-top-view
             file_id: 1LS9eD3ReIhBEriRa69Tsi1xm5MYU72HM
     runs-on: ubuntu-latest
     timeout-minutes: 350
     env:
-      TARGET_MIB: "850"
+      TARGET_MIB: "440"
       LABEL: ${{ matrix.label }}
       FILE_ID: ${{ matrix.file_id }}
     steps:
@@ -65,7 +65,7 @@ jobs:
           ls -lh "${SOURCE}"
           ffprobe -v error -show_entries format=duration,size -of default=nw=1 "${SOURCE}"
 
-      - name: Transcode duration-aware proxy under 1 GB
+      - name: Transcode connector-safe proxy
         shell: bash
         run: |
           set -euxo pipefail
@@ -75,7 +75,7 @@ jobs:
           duration="$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "${SOURCE}")"
           width="$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of default=nw=1:nk=1 "${SOURCE}")"
           height="$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of default=nw=1:nk=1 "${SOURCE}")"
-          video_kbps="$(python3 -c 'import sys; seconds=max(float(sys.argv[1]),1.0); target=int(sys.argv[2])*1024*1024; print(max(350,min(3000,int((target*8/seconds/1000)-120))))' "${duration}" "${TARGET_MIB}")"
+          video_kbps="$(python3 -c 'import sys; seconds=max(float(sys.argv[1]),1.0); target=int(sys.argv[2])*1024*1024; print(max(300,min(2600,int((target*8/seconds/1000)-112))))' "${duration}" "${TARGET_MIB}")"
           if [ "${width}" -ge "${height}" ]; then
             vf="scale='min(1920,iw)':-2,fps=30"
           else
@@ -86,16 +86,18 @@ jobs:
             -vf "${vf}" \
             -c:v libx264 -preset veryfast -b:v "${video_kbps}k" \
             -maxrate "$((video_kbps*12/10))k" -bufsize "$((video_kbps*2))k" \
-            -pix_fmt yuv420p -c:a aac -b:a 96k -movflags +faststart \
+            -pix_fmt yuv420p -c:a aac -b:a 88k -movflags +faststart \
             "${OUTPUT}"
           sha256sum "${OUTPUT}" > "era-proxy/${LABEL}-SHA256.txt"
+          bytes="$(stat -c%s "${OUTPUT}")"
+          test "${bytes}" -lt 500000000
           ls -lh "${OUTPUT}"
           ffprobe -v error -show_entries format=duration,size -of default=nw=1 "${OUTPUT}"
 
       - name: Upload proxy
         uses: actions/upload-artifact@v4
         with:
-          name: era-${{ matrix.label }}-proxy
+          name: era-${{ matrix.label }}-proxy-440m
           path: era-proxy/
           compression-level: 0
           retention-days: 7
